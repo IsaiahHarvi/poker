@@ -47,48 +47,48 @@ class Deck():
         self.deck_suits = DECK_SUITS
         self.card_values = CARD_VALUES
         self.seed: int | None = seed
-        self.build()
+        self._build()
+
+    def deal_player_hands(self, players: list[Player]) -> None:
+        for player in players:
+            player.hand = self._draw(count=2)
+
+    def deal_flop(self):
+        return self._draw(count=3)
+
+    def burn_turn(self):
+        self._burn()
+        return self._draw()
         
-    def build(self) -> list[Card]:
+    def _build(self) -> list[Card]:
         """
         Builds a deck of shuffled cards
         """
         self.cards = [Card(suit, value) for suit in self.deck_suits for value in list(self.card_values)[1:]]
-        self.shuffle()
+        self._shuffle()
 
-    def shuffle(self) -> list[Card]:
+    def _shuffle(self) -> list[Card]:
         """
         Shuffles the deck according to a seed provided to the Deck class
         """
         np.random.seed(self.seed) 
         np.random.shuffle(self.cards)
     
-    def draw(self, count: int = 1) -> list[Card]:
+    def _draw(self, count: int = 1) -> list[Card]:
         return [self.cards.pop() for _ in range(count)]
     
-    def burn(self) -> Card:
+    def _burn(self) -> Card:
         return self.cards.pop()
     
-    def deal_player_hands(self, players: list[Player]) -> None:
-        for player in players:
-            player.hand = self.draw(count=2)
-
-    def deal_flop(self):
-        return self.draw(count=3)
-
-    def burn_turn(self):
-        self.burn()
-        return self.draw()
-    
-    def cards_(self):
+    def _get_cards(self):
         return [c.__str__() for c in self.cards]
 
 
 if __name__ == "__main__":
     warnings.warn("This module is not meant to be run directly, but does contain a simple test.")
 
-    deck_ = Deck()
+    o_deck = Deck(seed=42)._get_cards()
     for _ in range(10_000):
-        assert np.all((c_deck := Deck().cards_()) == deck_.cards_()), print(f"{c_deck}\n\n\n{deck_.cards_()}")
-        assert len(deck_.cards_()) == len(c_deck) == 52
+        assert np.all((c_deck := Deck(seed=42)._get_cards()) == o_deck), f"Decks do not match: \n{c_deck}\n{o_deck}"
+        assert len(o_deck) == len(c_deck) == 52
     print("Passed! (deck.py)")

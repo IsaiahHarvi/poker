@@ -17,22 +17,20 @@ class Game:
         self.last_raise_idx = None
         self.pot = 0
         self.highest_stake = 0
-
-        self.start_hand() # Start Game
     
     def start_hand(self):
         self.pot = 0
         self.deck.deal_player_hands(self.players)
-        self.take_blinds()
-        self.get_bets()
+        self._take_blinds()
+        self._get_bets()
         self.table_cards.extend(self.deck.deal_flop())
         for _ in range(2):
-            self.get_bets()
+            self._get_bets()
             self.table_cards.extend(self.deck.burn_turn())
-        self.get_bets()
-        self.evaluate_winner()
+        self._get_bets()
+        self._evaluate_winner()
 
-    def take_blinds(self):
+    def _take_blinds(self):
         small_blind = 1
         big_blind = small_blind * 2
 
@@ -41,7 +39,7 @@ class Game:
         self.players[self.small_blind_idx].stake += small_blind
         self.players[self.big_blind_idx].stake += big_blind
 
-    def get_bets(self):
+    def _get_bets(self):
         current_player_idx = self.small_blind_idx   # not correct for pre flop betting'
         players = [p for p in self.players if not p.folded]
 
@@ -73,7 +71,7 @@ class Game:
             if (current_player_idx == self.last_raise_idx) or (self.last_raise_idx is None):
                 break
 
-    def evaluate_winner(self):
+    def _evaluate_winner(self):
         hands = {}
         for player in self.players:
             if player.folded:
@@ -81,10 +79,8 @@ class Game:
 
             hands[player] = self._get_best_hand(player.hand, self.table_cards)
 
-        for player in hands.keys():
-            if hands[player] == max(hands.values()):
-                best = hands[player]
-                break
+        best = max(hands.items(), key=lambda item: item[1])[1]
+
         print(f"{player.name} wins with score {best}!\n{' '.join(str(card) for card in player.hand)} | {' '.join(str(card) for card in self.table_cards)}")
 
         player.chips += self.pot - player.stake
