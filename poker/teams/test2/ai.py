@@ -16,7 +16,7 @@ class AI():
         #     action: fold,
         #     amount: 0 if action == raise
         # }
-        actions = ['fold', 'check', 'raise']
+        actions = ['fold', 'check', 'raise', 'call']
 
         print(f"Available actions for {self.__str__()}: {actions}")
         action = input("> ").lower()
