@@ -12,11 +12,11 @@ class Player():
         self.name = self.AI.__str__()
         self.hand = [] # list[Card]
         self.chips: int = 0
-        self.bet: int = 0
+        self.stake: int = 0 # per hand
         self.folded: bool = False
     
     def make_move(self) -> None:
-        self.AI.get_action()
+        return self.AI.get_action()
 
 
 def construct_players(debug: bool = False) -> list[Player]:

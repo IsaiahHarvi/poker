@@ -16,7 +16,12 @@ class AI():
         #     action: fold,
         #     amount: 0 if action == raise
         # }
+        actions = ['fold', 'check', 'raise']
 
-        # Modified by player
-        raise NotImplementedError
+        print(f"Available actions for {self.__str__()}: {actions}")
+        action = input("> ").lower()
 
+        if action == 'raise':
+            amount = int(input("Amount: "))       
+            return {'action': action, 'amount': amount}
+        return {'action': action}

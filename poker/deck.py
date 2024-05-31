@@ -72,7 +72,7 @@ class Deck():
     def deal_flop(self):
         return self.draw(count=3)
 
-    def turn_burn(self):
+    def burn_turn(self):
         self.burn()
         return self.draw()
     

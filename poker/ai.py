@@ -9,7 +9,7 @@ class AI(ABC):
         ...
 
     def __str__(self) -> str:
-        ... # return name of AI
+        ...
 
     def get_action(self) -> dict:
         # _ex = {

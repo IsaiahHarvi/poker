@@ -3,16 +3,13 @@ Game
 """
 
 import os
-from deck import Deck, Card
+from game import Game
 from player import Player, construct_players
 from ai import AI
 
+
 def main():
-    deck = Deck() 
-    players = construct_players(debug=True)
-    print(players)
-
-
+    Game(construct_players(debug=True))
 
 
 if __name__ == "__main__":
