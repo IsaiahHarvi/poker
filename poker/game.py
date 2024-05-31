@@ -1,5 +1,5 @@
 """
-Actual game logic
+Actual game logic and driver for the AI to play aganist each other.
 """
 
 from collections import Counter
@@ -96,52 +96,41 @@ class Game:
 
     def _get_best_hand(self, hole_cards, community_cards):
         all_cards = hole_cards + community_cards
-        best_hand = None
+        # best_hand = None
         best_rank = None
         for combination in combinations(all_cards, 5):
             rank = self._rank_hand(combination)
             if best_rank is None or rank > best_rank:
                 best_rank = rank
-                best_hand = combination
+                # best_hand = combination
         return best_rank # , best_hand
 
     def _rank_hand(self, hand):
         suits = [card.suit for card in hand]
-        values = CARD_VALUES
         value_counts = Counter(card.value for card in hand)
 
         is_flush = len(set(suits)) == 1
         is_straight = len(value_counts) == 5 and (max(card.value for card in hand) - min(card.value for card in hand) == 4)
-        sorted_values = sorted(value_counts.keys(), key=lambda x: values[x], reverse=True)
+        sorted_values = sorted(value_counts.keys(), key=lambda x: CARD_VALUES[x], reverse=True)
 
         if is_straight and is_flush:
-            print('Straight flush')
             return (8, sorted_values)  # Straight flush
         elif 4 in value_counts.values():
-            print('Four of a kind')
             return (7, self._get_rank_value(value_counts, 4, 1))  # Four of a kind
         elif 3 in value_counts.values() and 2 in value_counts.values():
-            print('Full house')
             return (6, self._get_rank_value(value_counts, 3, 2))  # Full house
         elif is_flush:
-            print('Flush')
             return (5, sorted_values)  # Flush
         elif is_straight:
-            print('Straight')
             return (4, sorted_values)  # Straight
         elif 3 in value_counts.values():
-            print('Three of a kind')
             return (3, self._get_rank_value(value_counts, 3, 1))  # Three of a kind
         elif list(value_counts.values()).count(2) == 2:
-            print('Two pair')
             return (2, self._get_rank_value(value_counts, 2, 2))  # Two pair
         elif 2 in value_counts.values():
-            print('One pair')
             return (1, self._get_rank_value(value_counts, 2, 1))  # One pair
         else:
-            print('High card')
             return (0, sorted_values)  # High card
-
 
     def _get_rank_value(self, value_counts, *counts):
         result = []
@@ -153,6 +142,5 @@ class Game:
         return result
 
 
-
 if __name__ == "__main__":
-    pass
+    raise RuntimeError("This submodule is not meant to be run directly.")

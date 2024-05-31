@@ -3,6 +3,7 @@ Deck Module containing the Deck and Card classes
 """
 
 import numpy as np
+import warnings
 from player import Player
 
 
@@ -56,6 +57,9 @@ class Deck():
         self.shuffle()
 
     def shuffle(self) -> list[Card]:
+        """
+        Shuffles the deck according to a seed provided to the Deck class
+        """
         np.random.seed(self.seed) 
         np.random.shuffle(self.cards)
     
@@ -81,6 +85,8 @@ class Deck():
 
 
 if __name__ == "__main__":
+    warnings.warn("This module is not meant to be run directly, but does contain a simple test.")
+
     deck_ = Deck()
     for _ in range(10_000):
         assert np.all((c_deck := Deck().cards_()) == deck_.cards_()), print(f"{c_deck}\n\n\n{deck_.cards_()}")

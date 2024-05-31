@@ -3,7 +3,7 @@ Instance of a player mapped to an AI
 """
 
 import os
-from ai import AI
+from teams.example.ai import AI
 from importlib import import_module
 
 class Player():
@@ -38,3 +38,7 @@ def construct_players(debug: bool = False) -> list[Player]:
             except ImportError as e:
                 raise ImportError(f"Error trying to import 'teams.{team_dir}.ai': {str(e)}")
     return players
+
+
+if __name__ == "__main__":
+    raise RuntimeError("This submodule is not meant to be run directly.")

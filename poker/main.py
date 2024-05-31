@@ -1,11 +1,9 @@
 """
-Game
+Runs the game driver.
 """
 
-import os
 from game import Game
-from player import Player, construct_players
-from ai import AI
+from player import construct_players
 
 
 def main():
