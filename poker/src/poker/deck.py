@@ -4,8 +4,8 @@ Deck Module containing the Deck and Card classes
 
 import numpy as np
 import warnings
-from player import Player
-
+from poker.player import Player
+from poker.teams.example.ai import AI
 
 DECK_SUITS = {
     'Hearts': "♥",

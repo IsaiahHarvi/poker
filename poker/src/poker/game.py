@@ -5,8 +5,8 @@ Actual game logic and driver for the AI to play aganist each other.
 import numpy as np
 from collections import Counter
 from itertools import combinations
-from deck import Deck, Card, DECK_SUITS, CARD_VALUES
-from player import Player
+from poker.deck import Deck, Card, DECK_SUITS, CARD_VALUES
+from poker.player import Player
 
 class Game:
     def __init__(self, players: list[Player]) -> None:
@@ -81,7 +81,7 @@ class Game:
             raise ValueError(f"Invalid move: {move}")
         return # move["action"]
 
-    def _evaluate_winner(self):
+    def _evaluate_winner(self): # TODO: rework this -- its messy
         hands = {}
         for player in self.players:
             if player.folded:
@@ -89,6 +89,14 @@ class Game:
 
             hands[player] = self._get_best_hand(player.hand, self.table_cards)
 
+        if len(hands) == 0:
+            print("All players folded!")
+            return
+        
+        if len(hands) == 1:
+            print(f"{player.name} wins by default with score {hands[player]}!\n{' '.join(str(card) for card in player.hand)} | {' '.join(str(card) for card in self.table_cards)}")
+            return
+        
         for player in hands.keys():
             if hands[player] == max(hands.values()):
                 best = hands[player]
@@ -97,7 +105,7 @@ class Game:
 
         player.chips += self.pot - player.stake
 
-    def _get_best_hand(self, hole_cards, community_cards):
+    def _get_best_hand(self, hole_cards: list[Card], community_cards: list[Card]):
         all_cards = hole_cards + community_cards
         # best_hand = None
         best_rank = None
@@ -108,7 +116,7 @@ class Game:
                 # best_hand = combination
         return best_rank # , best_hand
 
-    def _rank_hand(self, hand):
+    def _rank_hand(self, hand: list[Card]):
         suits = [card.suit for card in hand]
         hand_values = [card.value for card in hand]
         value_counts = Counter(card.value for card in hand)
@@ -136,7 +144,7 @@ class Game:
         else:
             return (0, sorted_values)  # High card
 
-    def _get_rank_value(self, value_counts, *counts):
+    def _get_rank_value(self, value_counts: Counter[int], *counts):
         values, nums = np.array(list(value_counts.items())).T
         result = values[np.isin(nums, counts)].tolist()
         result.sort(key=lambda x: list(CARD_VALUES.keys()).index(x), reverse=True)

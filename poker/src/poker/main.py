@@ -2,8 +2,8 @@
 Runs the game driver.
 """
 
-from game import Game
-from player import construct_players
+from poker.game import Game
+from poker.player import construct_players
 
 
 def main():

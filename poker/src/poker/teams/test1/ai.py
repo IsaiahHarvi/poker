@@ -13,11 +13,8 @@ class AI():
         print(f"\nAvailable actions for {self.__str__()}: {actions}")
         action = input("> ").lower()
 
-
         if len(action.split()) == 2:
             action, amount = action.split()
-            amount = int(amount)
+            return {"action": action, "amount": int(amount)}
         else:
-            amount = 0  
-
-        return {"action": action, "amount": amount if action == 'raise' else 0}
+            return {"action": action, "amount": 0}
