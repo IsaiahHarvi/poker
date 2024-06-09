@@ -36,10 +36,11 @@ poker/
    - Clone this repository to your local machine using `git clone <repo-url>`.
 
 2. **Set Up the Project as a Pip Package:**
+   - Ensure you are running Python v3.11.7
    - Navigate to the root directory of the project (where `setup.py` is located).
    - Run `pip install -e .` to install the project in editable mode. This allows you to make changes to the code and have them immediately reflected without needing to reinstall the package.
 
-3. **Integrate Your AI:**
+4. **Integrate Your AI:**
    - Navigate to the `teams` directory.
    - Create a new folder for your team and add your `ai.py` script that defines your AI's logic.
       - Team directory names cannot contain spaces
@@ -47,7 +48,7 @@ poker/
    - Additional files are no problem as long as the return format is the same.
    - You are limited to the packages that are listed in the requirements.txt file.
 
-4. **Setting the PYTHONPATH Environment Variable:**
+5. **Setting the PYTHONPATH Environment Variable:**
    - To ensure Python can find the `poker` package, set the `PYTHONPATH` environment variable to include the `src` directory.
 
    #### For Windows PowerShell:
@@ -65,7 +66,7 @@ poker/
    export PYTHONPATH=$(pwd)/src
    ```
 
-5. **Running the Games:**
+6. **Running the Games:**
    - After setting the `PYTHONPATH`, run the game by executing:
      ```sh
      python src/poker/main.py
