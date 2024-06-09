@@ -1,7 +1,6 @@
 numpy
 deuces
 torch
-tensorflow
 matplotlib
 pytest
 scipy
