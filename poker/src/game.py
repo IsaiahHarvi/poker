@@ -2,6 +2,7 @@
 Actual game logic and driver for the AI to play aganist each other.
 """
 
+import numpy as np
 from collections import Counter
 from itertools import combinations
 from deck import Deck, Card, DECK_SUITS, CARD_VALUES
@@ -12,6 +13,7 @@ class Game:
         self.players = players
         self.deck = Deck()  # creates and shuffles a deck
         self.table_cards = []
+        self.small_blind = 1 # TODO: increment as the game progresses
         self.small_blind_idx = 0  # index to specfic player in players list
         self.big_blind_idx = (self.small_blind_idx + 1) % len(self.players)
         self.last_raise_idx = None
@@ -21,7 +23,7 @@ class Game:
     def start_hand(self):
         self.pot = 0
         self.deck.deal_player_hands(self.players)
-        self._take_blinds()
+        self._take_blinds(self.small_blind)
         self._get_bets()
         self.table_cards.extend(self.deck.deal_flop())
         for _ in range(2):
@@ -30,46 +32,54 @@ class Game:
         self._get_bets()
         self._evaluate_winner()
 
-    def _take_blinds(self):
-        small_blind = 1
+    def _take_blinds(self, small_blind: int = 1):
         big_blind = small_blind * 2
 
-        self.players[self.small_blind_idx].chips -= small_blind
-        self.players[self.big_blind_idx].chips -= big_blind
-        self.players[self.small_blind_idx].stake += small_blind
-        self.players[self.big_blind_idx].stake += big_blind
+        self._update_stake_chips(self.small_blind_idx, small_blind)
+        self._update_stake_chips(self.big_blind_idx, big_blind)
+
+    def _update_stake_chips(self, idx: int, amount: int):
+        self.players[idx].chips -= amount
+        self.players[idx].stake += amount
+        self.pot += amount
 
     def _get_bets(self):
         current_player_idx = self.small_blind_idx   # not correct for pre flop betting'
         players = [p for p in self.players if not p.folded]
 
-        while True: # TODO: revisit this
+        while True: # TODO: revisit this, again
             player = players[current_player_idx]
             
-            move: dict = player.make_move() # gets the dict from the player's AI
-            if move['action'] == 'fold':
-                player.folded = True
-            elif move['action'] == 'raise':
-                self.last_raise_idx = current_player_idx
-                self.pot += move['amount']
-                player.stake += move['amount']
-                player.chips -= move['amount']
-                self._get_highest_stake() # TODO: move validation
-            elif move['action'] == 'call':
-                amount_owed = self.highest_stake - player.stake
-                self.pot += amount_owed
-                player.chips -= amount_owed
-                player.stake = self.highest_stake
-            elif move['action'] == 'check':
-                pass
-            else:
-                raise ValueError(f"Invalid action: {move['action']}")
+            print(f"{self.pot = }")
+            print(f"{self.highest_stake = }")
+
+            move: dict = player.make_move(self.highest_stake) # gets the dict from the player's AI
+            self._parse_move(move, player, current_player_idx)
         
             print(f"{player.name} {move['action']}s {move.get('amount', '')} chips\n{' '.join(str(card) for card in player.hand)} | {' '.join(str(card) for card in self.table_cards)}")
 
             current_player_idx = (current_player_idx + 1) % len(players)
-            if (current_player_idx == self.last_raise_idx) or (self.last_raise_idx is None):
+            if (current_player_idx == self.last_raise_idx) or \
+               (self.last_raise_idx is None) or \
+               (len([p for p in players if not p.folded]) == 1):
                 break
+
+    def _parse_move(self, move: dict, player: Player, player_idx: int):
+        if move["action"] == "fold":
+            player.folded = True
+        elif move["action"] == "raise":
+            amount = move["amount"]
+            self._update_stake_chips(player_idx, amount)
+            self.highest_stake = max(self.highest_stake, player.stake)
+            self.last_raise_idx = player_idx
+        elif move["action"] == "call":
+            amount = self.highest_stake - player.stake
+            if (amount > 0): self._update_stake_chips(player_idx, amount)
+        elif move["action"] == "check":
+            pass
+        else:
+            raise ValueError(f"Invalid move: {move}")
+        return # move["action"]
 
     def _evaluate_winner(self):
         hands = {}
@@ -79,16 +89,13 @@ class Game:
 
             hands[player] = self._get_best_hand(player.hand, self.table_cards)
 
-        best = max(hands.items(), key=lambda item: item[1])[1]
-
+        for player in hands.keys():
+            if hands[player] == max(hands.values()):
+                best = hands[player]
+                break
         print(f"{player.name} wins with score {best}!\n{' '.join(str(card) for card in player.hand)} | {' '.join(str(card) for card in self.table_cards)}")
 
         player.chips += self.pot - player.stake
-
-    def _get_highest_stake(self):
-        for player in self.players:
-            if player.stake > self.highest_stake:
-                self.highest_stake = player.stake
 
     def _get_best_hand(self, hole_cards, community_cards):
         all_cards = hole_cards + community_cards
@@ -103,24 +110,25 @@ class Game:
 
     def _rank_hand(self, hand):
         suits = [card.suit for card in hand]
+        hand_values = [card.value for card in hand]
         value_counts = Counter(card.value for card in hand)
 
-        is_flush = len(set(suits)) == 1
-        is_straight = len(value_counts) == 5 and (max(card.value for card in hand) - min(card.value for card in hand) == 4)
+        is_flush = (len(set(suits)) == 1)
+        is_straight = (len(value_counts) == 5 and (max(hand_values) - min(hand_values) == 4))  #
         sorted_values = sorted(value_counts.keys(), key=lambda x: CARD_VALUES[x], reverse=True)
 
-        if is_straight and is_flush:
-            return (8, sorted_values)  # Straight flush
-        elif 4 in value_counts.values():
-            return (7, self._get_rank_value(value_counts, 4, 1))  # Four of a kind
-        elif 3 in value_counts.values() and 2 in value_counts.values():
-            return (6, self._get_rank_value(value_counts, 3, 2))  # Full house
+        if (is_straight and is_flush):     # Straight flush
+            return (8, sorted_values) 
+        elif 4 in value_counts.values():   # Four of a kind
+            return (7, self._get_rank_value(value_counts, 4, 1))
+        elif (3 in value_counts.values() and 2 in value_counts.values()): # Full house
+            return (6, self._get_rank_value(value_counts, 3, 2))
         elif is_flush:
-            return (5, sorted_values)  # Flush
+            return (5, sorted_values)  
         elif is_straight:
-            return (4, sorted_values)  # Straight
-        elif 3 in value_counts.values():
-            return (3, self._get_rank_value(value_counts, 3, 1))  # Three of a kind
+            return (4, sorted_values)
+        elif 3 in value_counts.values():   # Three of a kind
+            return (3, self._get_rank_value(value_counts, 3, 1))  
         elif list(value_counts.values()).count(2) == 2:
             return (2, self._get_rank_value(value_counts, 2, 2))  # Two pair
         elif 2 in value_counts.values():
@@ -129,12 +137,10 @@ class Game:
             return (0, sorted_values)  # High card
 
     def _get_rank_value(self, value_counts, *counts):
-        result = []
-        for count in counts:
-            for value, num in value_counts.items():
-                if num == count:
-                    result.append(value)
+        values, nums = np.array(list(value_counts.items())).T
+        result = values[np.isin(nums, counts)].tolist()
         result.sort(key=lambda x: list(CARD_VALUES.keys()).index(x), reverse=True)
+
         return result
 
 

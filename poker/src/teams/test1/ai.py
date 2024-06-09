@@ -1,7 +1,3 @@
-"""
-Modifiable class for players creating AI.
-"""
-
 import os
 
 class AI():
@@ -17,7 +13,11 @@ class AI():
         print(f"\nAvailable actions for {self.__str__()}: {actions}")
         action = input("> ").lower()
 
-        if action == 'raise':
-            amount = int(input("Amount: "))       
-            return {'action': action, 'amount': amount}
-        return {'action': action}
+
+        if len(action.split()) == 2:
+            action, amount = action.split()
+            amount = int(amount)
+        else:
+            amount = 0  
+
+        return {"action": action, "amount": amount if action == 'raise' else 0}

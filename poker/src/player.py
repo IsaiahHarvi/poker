@@ -15,7 +15,7 @@ class Player():
         self.stake: int = 0 # per hand
         self.folded: bool = False
     
-    def make_move(self) -> None:
+    def make_move(self, highest_stake: int) -> None:
         return self.AI.get_action()
 
 
@@ -23,7 +23,7 @@ def construct_players(debug: bool = False) -> list[Player]:
     players = []
     base_dir = os.path.join(os.getcwd(), "teams")
     for team_dir in os.listdir(base_dir):
-        if "test" in team_dir and not debug:
+        if ("test" in team_dir and not debug) or (team_dir == "example"):
             continue
 
         team_path = os.path.join(base_dir, team_dir)

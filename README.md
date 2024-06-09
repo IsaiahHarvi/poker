@@ -30,4 +30,4 @@ This repository is structured to facilitate the development and testing of poker
    - Ensure your AI script follows the interface used in the `example/ai.py`.
    - Additional files are no problem as long as the return format is the same, any additional packages should be accompanied by a requirements.txt in your directory.
 4. **Running the Games:**
-   - Run `python main.py` from the root of the `poker` directory
+   - Run `python main.py` from the `poker/src` directory
