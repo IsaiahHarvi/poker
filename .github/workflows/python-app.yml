@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests, and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Install and Pytest
+name: Application Test
 
 on:
   push:
@@ -13,8 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  manual-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,8 +39,15 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       working-directory: ./poker
 
-    - name: Devcontainer Pytest Stage
+  devcontainer-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Pytest Stage
       uses: devcontainers/ci@v0.3.1900000349
       with:
-        devcontainerPath: .devcontainer/devcontainer.json
-        runCmd: cd poker && pytest
+        containerWorkspaceFolder: /workspaces/poker
+        configFile: .devcontainer/devcontainer.json
+        runCmd: cd /workspaces/poker && pytest
