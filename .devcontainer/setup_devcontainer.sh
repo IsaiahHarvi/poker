@@ -7,6 +7,10 @@ cd ./poker
 pip3 install -e .
 
 echo "Running Git Config..."
-# git lfs install # its probably unecessary to update hooks on build
-gh auth login --with-token < ~/.github-token
-gh auth status || echo "GitHub auth failed, did you provide a token?"
+if [ -f ~/.github-token ]; then
+  echo "GitHub token found, proceeding with authentication..."
+  gh auth login --with-token < ~/.github-token
+  gh auth status || echo "GitHub auth failed, check your permissions."
+else
+  echo "No GitHub token found, skipping authentication..."
+fi
