@@ -5,4 +5,4 @@ poker.egg-info
 
 # please do not commit your token
 .github-token
-*token 
+.devcontainer/*token
