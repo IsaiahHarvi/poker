@@ -1,5 +1,5 @@
 // For Linux or WSL 
-// can integrate with github if '.github-token' is located at home dir
+// can integrate with github if '.github-token' is located in .devcontainer dir
 {
     "name": "Python 3: Poker",
     "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bookworm",
@@ -10,9 +10,6 @@
       },
       "ghcr.io/devcontainers/features/github-cli:1": {}
     },
-    "mounts": [
-      "source=${localEnv:HOME}/.github-token,target=/home/vscode/.github-token,type=bind,consistency=cached"
-    ],
     "postCreateCommand": ".devcontainer/setup_devcontainer.sh"
   }
   

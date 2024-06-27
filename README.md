@@ -33,7 +33,7 @@ poker/
 
 ## Getting Started
 
-NOTE: There is a provided devcontainer (for use in the vscode extension) that will handle all of the inital setup. A github token can be placed in the home directory of your OS before building the container to provide git functionality. The only further action after building is to cd to poker/poker/.
+NOTE: There is a provided devcontainer (for use in the vscode extension) that will handle all of the inital setup. A github token (.github-token) can be placed in .devcontainer directory before building the container to provide git functionality. The only further action after building is to cd to poker/poker/.
 
 1. **Clone the Repository:**
    - Clone this repository to your local machine using `git clone <repo-url>`.
