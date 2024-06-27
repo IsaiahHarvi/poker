@@ -7,6 +7,7 @@ This repository is structured to facilitate the development and testing of poker
 
 ```
 poker/
+├── .devcontainer
 ├── setup.py
 ├── requirements.in
 ├── requirements.txt
@@ -32,12 +33,14 @@ poker/
 
 ## Getting Started
 
+NOTE: There is a provided devcontainer (for use in the vscode extension) that will handle all of the inital setup. A github token can be placed in the home directory of your OS before building the container to provide git functionality. The only further action after building is to cd to poker/poker/.
+
 1. **Clone the Repository:**
    - Clone this repository to your local machine using `git clone <repo-url>`.
 
 2. **Set Up the Project as a Pip Package:**
-   - Ensure you are running Python v3.11.7
-   - Navigate to the root directory of the project (where `setup.py` is located).
+   - Ensure you are running Python v3.11.9
+   - Navigate to the poker/poker/ dir of the project (where `setup.py` is located).
    - Run `pip install -e .` to install the project in editable mode. This allows you to make changes to the code and have them immediately reflected without needing to reinstall the package.
 
 4. **Integrate Your AI:**
@@ -67,6 +70,7 @@ poker/
    ```
 
 6. **Running the Games:**
+   - Ensure your cwd is poker/poker
    - After setting the `PYTHONPATH`, run the game by executing:
      ```sh
      python src/poker/main.py
@@ -74,7 +78,7 @@ poker/
 
 ## Running Tests
 
-To run the tests, simply execute the following command in the root directory:
+To run the tests, simply execute the following command in the poker/poker directory:
 
 ```sh
 pytest
