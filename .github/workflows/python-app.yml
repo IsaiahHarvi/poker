@@ -43,6 +43,5 @@ jobs:
     - name: Devcontainer Pytest Stage
       uses: devcontainers/ci@v0
       with:
-        runCmd: pytest
+        runCmd: cd poker && pytest
         devcontainerPath: ../.devcontainer/devcontainer.json
-      working-directory: ./poker
