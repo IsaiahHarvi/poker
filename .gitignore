@@ -2,5 +2,7 @@ __pycache__/
 *.code-workspace
 *.pytest_cache/
 poker.egg-info
+
+# please do not commit your token
 .github-token
-# .devcontainer
+*token 
