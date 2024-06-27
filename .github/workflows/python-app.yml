@@ -40,7 +40,7 @@ jobs:
       working-directory: ./poker
 
     - name: Pytest Stage
-      run: cd poker && pytest tests -v
+      run: pytest tests -v
       working-directory: ./poker
 
   windows-build:
@@ -72,7 +72,7 @@ jobs:
       working-directory: ./poker
 
     - name: Pytest Stage
-      run: cd poker && pytest tests -v
+      run: pytest tests -v
       shell: bash
       working-directory: ./poker
       
