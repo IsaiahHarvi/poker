@@ -48,5 +48,5 @@ jobs:
     - name: Pytest Stage
       uses: devcontainers/ci@v0.3.1900000349
       with:
-        configFile: .devcontainer/devcontainer.json
+        configFile: .devcontainer/devcontainer_ci.json
         runCmd: cd /workspaces/poker/poker && pytest
