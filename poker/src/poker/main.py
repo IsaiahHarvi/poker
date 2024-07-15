@@ -7,7 +7,9 @@ from poker.player import construct_players
 
 
 def main():
-    Game(construct_players(debug=True)).start_hand()
+    Game(
+        players=construct_players(debug=True)
+    ).start_hand()
 
 
 if __name__ == "__main__":

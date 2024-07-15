@@ -3,7 +3,7 @@ Instance of a player mapped to an AI
 """
 
 import os
-from poker.teams.example.ai import AI
+from poker.teams.example.ai import AI # for typing
 from importlib import import_module
 
 class Player():
@@ -24,7 +24,7 @@ def construct_players(debug: bool = False) -> list[Player]:
     base_dir = os.path.join(os.getcwd(), "src/poker/teams")
     for team_dir in os.listdir(base_dir):
         if ("test" in team_dir and not debug) or (team_dir == "example"):
-            continue
+            continue # skip test teams and the example unless debug is enabled
 
         team_path = os.path.join(base_dir, team_dir)
         if os.path.isdir(team_path) and "ai.py" in os.listdir(team_path):

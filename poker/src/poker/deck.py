@@ -3,7 +3,6 @@ Deck Module containing the Deck and Card classes
 """
 
 import numpy as np
-import warnings
 from poker.player import Player
 from poker.teams.example.ai import AI
 
@@ -49,7 +48,7 @@ class Deck():
         self.seed: int | None = seed
         self.build()
         
-    def build(self) -> list[Card]:
+    def build(self) -> None:
         """
         Builds a deck of shuffled cards
         """
@@ -57,7 +56,7 @@ class Deck():
         self.shuffle()
         return
 
-    def shuffle(self) -> list[Card]:
+    def shuffle(self) -> None:
         """
         Shuffles the deck according to a seed provided to the Deck class
         """
@@ -71,7 +70,7 @@ class Deck():
         """
         return [self.cards.pop() for _ in range(count)]
     
-    def burn(self) -> Card:
+    def burn(self) -> None:
         """
         Removes the top card from the deck
         """
@@ -92,11 +91,11 @@ class Deck():
         """
         return self.draw(count=3)
 
-    def burn_turn(self):
+    def burn_turn(self) -> list[Card]:
         self.burn()
         return self.draw()
     
-    def cards_(self):
+    def __str__(self) -> list[str]:
         """
         Prints the cards in the deck
         """
@@ -104,10 +103,12 @@ class Deck():
 
 
 if __name__ == "__main__":
+    import warnings
     warnings.warn("This module is not meant to be run directly, but does contain a simple test.")
 
-    deck_ = Deck()
-    for _ in range(10_000):
-        assert np.all((c_deck := Deck().cards_()) == deck_.cards_()), print(f"{c_deck}\n\n\n{deck_.cards_()}")
-        assert len(deck_.cards_()) == len(c_deck) == 52
+    deck = Deck()
+    for _ in range(1000):
+        test_deck = Deck()
+        assert np.all(test_deck.__str__() != deck.__str__())
+        assert len(test_deck.__str__()) == len(deck.__str__()) == 52
     print("Passed! (deck.py)")

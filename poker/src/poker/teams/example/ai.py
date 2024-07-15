@@ -21,15 +21,24 @@ class AI(ABC):
         Referred to as the response.
 
         Must call the _send_action method to send your response.
-        """
 
-        response = {"action": "fold", "amount": 0}
+        EXAMPLES
+        Fold:
+            response = {"action" : "fold"}
+        Raise:
+            response = {"action" : "raise", "amount" : 100}
+        Call:
+            response = {"action" : "call"}
+        Check:
+            response = {"action" : "check"}
+        """
+        response = {"action" : "fold"}
         return self._send_action(action=response)
 
     def _send_action(self, response: dict) -> None:
         """
         Send an action to the game engine.
-
+        !! DO NOT MODIFY !!
         Args:
             action: dict = { 
                 action: str, 
@@ -38,7 +47,10 @@ class AI(ABC):
         """
         assert "action" in response, "Response must contain an action key"
         assert response["action"] in ["fold", "check", "raise", "call"], f"Invalid action: '{response['action']}"
-        assert "amount" in response, "Response must contain an action key"
-        assert isinstance(response["amount"], int), "Raise amount must be an integer"
-        assert response["amount"] >= 0, "Raise amount must be non-negative"
+        if response["action"] == "raise":
+            assert len(list(response.keys())) == 2, "Invalid response keys, options are 'action' and 'amount'"
+            assert "amount" in response, "Raise action must contain an amount key"
+            assert isinstance(response["amount"], int), "Raise amount must be an integer"
+            assert response["amount"] > 0, "Raise amount must be non-negative"
+        else: assert len(list(response.keys())) == 1, "Invalid response keys, options are 'action'"
         return response

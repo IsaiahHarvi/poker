@@ -11,14 +11,14 @@ from poker.player import Player
 class Game:
     def __init__(self, players: list[Player]) -> None:
         self.players = players
-        self.deck = Deck()  # creates and shuffles a deck
-        self.table_cards = []
-        self.small_blind = 1 # TODO: increment as the game progresses
-        self.small_blind_idx = 0  # index to specfic player in players list
-        self.big_blind_idx = (self.small_blind_idx + 1) % len(self.players)
-        self.last_raise_idx = None
-        self.pot = 0
-        self.highest_stake = 0
+        self.deck: Deck = Deck()  # creates and shuffles a deck
+        self.table_cards: list[Card] = []
+        self.small_blind: int = 1 # TODO: increment as the game progresses
+        self.small_blind_idx: int = 0  # index to specfic player in players list
+        self.big_blind_idx: int = (self.small_blind_idx + 1) % len(self.players)
+        self.last_raise_idx: int = None
+        self.pot: int = 0
+        self.highest_stake: int = 0
     
     def start_hand(self):
         self.pot = 0
@@ -33,17 +33,26 @@ class Game:
         self._evaluate_winner()
 
     def _take_blinds(self, small_blind: int = 1):
+        """
+        Updates the big blind and calls _update_stake_chips for both blinds
+        """
         big_blind = small_blind * 2
 
         self._update_stake_chips(self.small_blind_idx, small_blind)
         self._update_stake_chips(self.big_blind_idx, big_blind)
 
     def _update_stake_chips(self, idx: int, amount: int):
+        """
+        Updates the pot and the player[idx]'s chips and stake
+        """
         self.players[idx].chips -= amount
         self.players[idx].stake += amount
         self.pot += amount
 
     def _get_bets(self):
+        """
+        Loops through the existing players and calls their AI to make a move
+        """
         current_player_idx = self.small_blind_idx   # not correct for pre flop betting'
         players = [p for p in self.players if not p.folded]
 
@@ -64,29 +73,30 @@ class Game:
                (len([p for p in players if not p.folded]) == 1):
                 break
 
-    def _parse_move(self, move: dict, player: Player, player_idx: int):
-        if move["action"] == "fold":
-            player.folded = True
-        elif move["action"] == "raise":
-            amount = move["amount"]
-            self._update_stake_chips(player_idx, amount)
-            self.highest_stake = max(self.highest_stake, player.stake)
-            self.last_raise_idx = player_idx
-        elif move["action"] == "call":
-            amount = self.highest_stake - player.stake
-            if (amount > 0): self._update_stake_chips(player_idx, amount)
-        elif move["action"] == "check":
-            pass
-        else:
-            raise ValueError(f"Invalid move: {move}")
-        return # move["action"]
+    def _parse_move(self, move: dict, player: Player, player_idx: int) -> None:
+        match move["action"]:
+            case "fold":
+                player.folded = True
+            case "raise":
+                amount = move["amount"]
+                self._update_stake_chips(player_idx, amount)
+                self.highest_stake = max(self.highest_stake, player.stake)
+                self.last_raise_idx = player_idx
+            case "call":
+                amount = self.highest_stake - player.stake
+                if (amount > 0): self._update_stake_chips(player_idx, amount)
+            case "check":
+                if (self.highest_stake > player.stake):
+                    raise ValueError("Cannot check, must call or fold")
+            case _:
+                raise ValueError(f"Invalid move: {move}")
 
     def _evaluate_winner(self): # TODO: rework this -- its messy
         hands = {}
         for player in self.players:
             if player.folded:
                 continue
-
+            
             hands[player] = self._get_best_hand(player.hand, self.table_cards)
 
         if len(hands) == 0:
@@ -101,6 +111,7 @@ class Game:
             if hands[player] == max(hands.values()):
                 best = hands[player]
                 break
+
         print(f"{player.name} wins with score {best}!\n{' '.join(str(card) for card in player.hand)} | {' '.join(str(card) for card in self.table_cards)}")
 
         player.chips += self.pot - player.stake
