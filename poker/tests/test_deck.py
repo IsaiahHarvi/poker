@@ -18,7 +18,7 @@ def test_card_representation():
 def test_shuffle_deck():
     deck1 = Deck(seed=69)
     deck2 = Deck(seed=69)
-    assert deck1.cards_() == deck2.cards_(), "Decks with same seed should be shuffled identically"
+    assert deck1.__str__() == deck2.__str__(), "Decks with same seed should be shuffled identically"
 
 def test_draw_cards():
     deck = Deck()
